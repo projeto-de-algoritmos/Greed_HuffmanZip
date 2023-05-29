@@ -107,12 +107,48 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
             fcodes.write(f"\'{chr(value)}\'" if 32 <= value <= 126 else f'{value}')
             fcodes.write(f' ({prob}) : {code}\n')
 
-def decompress():
-    ...
+def decompress(compressed_file) -> bytearray:
+    with open(compressed_file, 'rb') as bfile:
+        header_size = int.from_bytes(bfile.read(4), 'big')
+        codes:dict[int, str] = {}
 
-arquivo_teste = 'labunc.bmp'
+        while bfile.tell() < header_size + 4:
+            value = int.from_bytes(bfile.read(1), 'big')
+            size = int.from_bytes(bfile.read(1), 'big')
+            code = bfile.read(size).decode('ascii')
+            codes[value] = code
+
+        compressed_data = bfile.read()
+        root = Node.from_codes(codes)
+        node = root
+        uncompressed_data = bytearray()
+
+        for byte in compressed_data:
+            bits = bin(byte)[2:]
+            bits = '0' * (8 - len(bits)) + bits
+
+            for b in bits:
+                if b == '0':
+                    node = node.left
+                if b == '1':
+                    node = node.right
+                if node.value is not None:
+                    uncompressed_data.append(node.value)
+                    node = root
+
+    return uncompressed_data
+
+def write_decompressed_data(data, output_file):
+    with open(output_file, 'wb') as f:
+        f.write(data)
+
+
+arquivo_teste = 'in.txt'
 with open(arquivo_teste, 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
     write_codes(codes, probabilities)
     write_compressed_file(compressed_bits, codes, 'out.bin')
+
+data = decompress('out.bin')
+write_decompressed_data(data, 'out.txt')
