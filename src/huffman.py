@@ -50,7 +50,7 @@ def __get_codes_r(node:Node, codes:dict[int, str], current_code:str='') -> None:
         __get_codes_r(node.left, codes, current_code + '0')
         __get_codes_r(node.right, codes, current_code + '1')
 
-def compress(data:bytes) -> tuple[str, dict[int, str]]:
+def compress(data:bytes) -> tuple[str, dict[int, str], dict[int, int]]:
     probabilities = get_probability(data)
     codes_tree = get_huffman_codes_tree(probabilities)
     codes = get_codes(codes_tree)
