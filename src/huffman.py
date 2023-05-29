@@ -31,8 +31,6 @@ def get_huffman_codes_tree(probabilities:dict[int, int]) -> Node:
     while len(heap) > 1:
         node1 = heapq.heappop(heap)
         node2 = heapq.heappop(heap)
-
-        combined_probability = node1.probability + node2.probability
     
         heapq.heappush(heap, Node(None, node1.probability + node2.probability, left=node1, right=node2))
     
@@ -83,9 +81,13 @@ def write_compressed_file(compressed_bits:str, codes:dict[int, str], output_file
         f.write(compressed_bytes)
 
 def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
+    codes_list = [(value, code, probabilities[value]) for value, code in codes.items()]
+    codes_list.sort(key=lambda x: x[2], reverse=True)
+
     with open('codes.txt', 'w') as fcodes:
-        for value, code in codes.items():
-            fcodes.write(f'{chr(value) if 33 <= value <= 126 else value} ({probabilities[value]}) : {code}\n')
+        for value, code, prob in codes_list:
+            fcodes.write(f"\'{chr(value)}\'" if 32 <= value <= 126 else f'{value}')
+            fcodes.write(f' ({prob}) : {code}\n')
 
 def decompress():
         ...
@@ -95,7 +97,7 @@ def decompress():
 
 
 
-with open('teste.txt', 'rb') as fin:
+with open('lorem.txt', 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
     write_codes(codes, probabilities)
