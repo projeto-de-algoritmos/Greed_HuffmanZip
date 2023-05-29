@@ -83,6 +83,9 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
     codes_list.sort(key=lambda x: x[2], reverse=True)
 
     with open('codes.txt', 'w') as fcodes:
+        acl = sum(len(code) * prob for value, code, prob in codes_list) / sum(probabilities.values())
+        fcodes.write(f'Average Codeword Length = {acl:.3f} bits/symbol\n')
+
         for value, code, prob in codes_list:
             fcodes.write(f"\'{chr(value)}\'" if 32 <= value <= 126 else f'{value}')
             fcodes.write(f' ({prob}) : {code}\n')
@@ -90,7 +93,7 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
 def decompress():
     ...
 
-with open('in.txt', 'rb') as fin:
+with open('lorem.txt', 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
     write_codes(codes, probabilities)
