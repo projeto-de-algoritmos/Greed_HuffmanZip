@@ -7,6 +7,23 @@ class Node:
         self.probability = probability
         self.left = left
         self.right = right
+
+    def from_codes(codes:dict[int, str]):
+        root = Node(value=None, probability=0)
+        for value, code in codes.items():
+            node = root
+            for c in code:
+                if c == '0':
+                    if node.left is None:
+                        node.left = Node(value=None, probability=0)
+                    node = node.left
+                elif c == '1':
+                    if node.right is None:
+                        node.right = Node(value=None, probability=0)
+                    node = node.right
+            node.value = value
+
+        return root
     
     def __lt__(self, other:Node):
         return self.probability < other.probability
@@ -93,7 +110,8 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
 def decompress():
     ...
 
-with open('lorem.txt', 'rb') as fin:
+arquivo_teste = 'labunc.bmp'
+with open(arquivo_teste, 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
     write_codes(codes, probabilities)
