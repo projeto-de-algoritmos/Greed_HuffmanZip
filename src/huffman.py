@@ -85,6 +85,11 @@ def write_compressed_file(compressed_bits:str, codes:dict[int, str], output_file
             header.append(ord(c))
     header_size = len(header)
 
+    remaining_zeroes = 0
+    if len(compressed_bits) % 8 != 0:
+        remaining_zeroes = 8 - len(compressed_bits) % 8
+        compressed_bits += '0' * remaining_zeroes
+
     compressed_bytes = bytearray()
     for i in range(0, len(compressed_bits), 8):
         byte = compressed_bits[i : i+8]
@@ -92,6 +97,7 @@ def write_compressed_file(compressed_bits:str, codes:dict[int, str], output_file
 
     with open(output_file, 'wb') as f:
         f.write(header_size.to_bytes(4, 'big'))
+        f.write(remaining_zeroes.to_bytes(1, 'big'))
         f.write(header)
         f.write(compressed_bytes)
 
@@ -110,6 +116,7 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
 def decompress(compressed_file) -> bytearray:
     with open(compressed_file, 'rb') as bfile:
         header_size = int.from_bytes(bfile.read(4), 'big')
+        remaining_zeroes = int.from_bytes(bfile.read(1), 'big')
         codes:dict[int, str] = {}
 
         while bfile.tell() < header_size + 4:
@@ -123,11 +130,15 @@ def decompress(compressed_file) -> bytearray:
         node = root
         uncompressed_data = bytearray()
 
-        for byte in compressed_data:
+        for i, byte in enumerate(compressed_data):
+
+
             bits = bin(byte)[2:]
             bits = '0' * (8 - len(bits)) + bits
 
-            for b in bits:
+            for ib, b in enumerate(bits):
+                if i == len(compressed_data) - 1 and ib == 8 - remaining_zeroes:
+                    break
                 if b == '0':
                     node = node.left
                 if b == '1':
@@ -143,7 +154,7 @@ def write_decompressed_data(data, output_file):
         f.write(data)
 
 
-arquivo_teste = 'in.txt'
+arquivo_teste = 'a.bmp'
 with open(arquivo_teste, 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
@@ -151,4 +162,4 @@ with open(arquivo_teste, 'rb') as fin:
     write_compressed_file(compressed_bits, codes, 'out.bin')
 
 data = decompress('out.bin')
-write_decompressed_data(data, 'out.txt')
+write_decompressed_data(data, 'out.bmp')
