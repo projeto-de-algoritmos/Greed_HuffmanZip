@@ -61,13 +61,11 @@ def compress(data:bytes) -> tuple[str, dict[int, str], dict[int, int]]:
 
 def write_compressed_file(compressed_bits:str, codes:dict[int, str], output_file:str):
     header = bytearray()
-    try:
-    # TODO CONSERTAR: HEADER NÃO PODE CONVERTER CODIGOS PRA INT, TEM QUE GUARDAR O CÓDIGO INTEIRO
-        for value, code in codes.items():
-            header.append(value)
-            header.append(int(code, 2))
-    except ValueError:
-        print(value, code)
+    for value, code in codes.items():
+        header.append(value)
+        header.append(len(code))
+        for c in code:
+            header.append(ord(c))
     header_size = len(header)
 
     compressed_bytes = bytearray()
@@ -76,7 +74,7 @@ def write_compressed_file(compressed_bits:str, codes:dict[int, str], output_file
         compressed_bytes.append(int(byte, 2))
 
     with open(output_file, 'wb') as f:
-        f.write(header_size.to_bytes(1, 'big'))
+        f.write(header_size.to_bytes(4, 'big'))
         f.write(header)
         f.write(compressed_bytes)
 
@@ -90,15 +88,10 @@ def write_codes(codes:dict[int, str], probabilities:dict[int, int]):
             fcodes.write(f' ({prob}) : {code}\n')
 
 def decompress():
-        ...
+    ...
 
-
-
-
-
-
-with open('lorem.txt', 'rb') as fin:
+with open('in.txt', 'rb') as fin:
     data = fin.read()
     compressed_bits, codes, probabilities = compress(data)
     write_codes(codes, probabilities)
-    write_compressed_file(compressed_bits, codes, 'out.txt')
+    write_compressed_file(compressed_bits, codes, 'out.bin')
