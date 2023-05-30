@@ -154,12 +154,12 @@ def write_decompressed_data(data, output_file):
         f.write(data)
 
 
-arquivo_teste = 'a.bmp'
-with open(arquivo_teste, 'rb') as fin:
-    data = fin.read()
-    compressed_bits, codes, probabilities = compress(data)
-    write_codes(codes, probabilities)
-    write_compressed_file(compressed_bits, codes, 'out.bin')
+# arquivo_teste = 'a.bmp'
+# with open(arquivo_teste, 'rb') as fin:
+#     data = fin.read()
+#     compressed_bits, codes, probabilities = compress(data)
+#     write_codes(codes, probabilities)
+#     write_compressed_file(compressed_bits, codes, 'out.bin')
 
-data = decompress('out.bin')
-write_decompressed_data(data, 'out.bmp')
+# data = decompress('out.bin')
+# write_decompressed_data(data, 'out.bmp')
