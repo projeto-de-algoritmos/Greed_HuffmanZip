@@ -8,7 +8,7 @@ class Node:
         self.left = left
         self.right = right
 
-    def from_codes(codes:dict[int, str]):
+    def from_codes(codes:dict[int, str]) -> Node:
         root = Node(value=None, probability=0)
         for value, code in codes.items():
             node = root
@@ -25,7 +25,7 @@ class Node:
 
         return root
     
-    def __lt__(self, other:Node):
+    def __lt__(self, other:Node) -> bool:
         return self.probability < other.probability
 
 def get_probability(data:bytes) -> dict[int, int]:
@@ -152,14 +152,3 @@ def decompress(compressed_file) -> bytearray:
 def write_decompressed_data(data, output_file):
     with open(output_file, 'wb') as f:
         f.write(data)
-
-
-# arquivo_teste = 'a.bmp'
-# with open(arquivo_teste, 'rb') as fin:
-#     data = fin.read()
-#     compressed_bits, codes, probabilities = compress(data)
-#     write_codes(codes, probabilities)
-#     write_compressed_file(compressed_bits, codes, 'out.bin')
-
-# data = decompress('out.bin')
-# write_decompressed_data(data, 'out.bmp')
