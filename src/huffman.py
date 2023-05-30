@@ -131,8 +131,6 @@ def decompress(compressed_file) -> bytearray:
         uncompressed_data = bytearray()
 
         for i, byte in enumerate(compressed_data):
-
-
             bits = bin(byte)[2:]
             bits = '0' * (8 - len(bits)) + bits
 
