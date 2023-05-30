@@ -119,7 +119,7 @@ def decompress(compressed_file) -> bytearray:
         remaining_zeroes = int.from_bytes(bfile.read(1), 'big')
         codes:dict[int, str] = {}
 
-        while bfile.tell() < header_size + 4:
+        while bfile.tell() < header_size + 5:
             value = int.from_bytes(bfile.read(1), 'big')
             size = int.from_bytes(bfile.read(1), 'big')
             code = bfile.read(size).decode('ascii')
