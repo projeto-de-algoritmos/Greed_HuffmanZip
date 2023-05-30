@@ -21,9 +21,12 @@ def main():
         elif sys.argv[1] == '-x' or sys.argv[1] == '-X':
             archive = sys.argv[2]
             data = decompress(archive)
-            write_decompressed_data(data, f'{archive[:-8]}_decompressed.{archive[-8:-4]}')
+            new_file_name = archive.split('.')
+            new_file_name = ''.join(new_file_name[:-2]) + '_decompressed.' + new_file_name[-2]
+            write_decompressed_data(data, new_file_name)
         else:
             usage()
+
     except IndexError:
         usage()
 
